@@ -1,0 +1,12 @@
+{
+  "name": "opensea_aggregator",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "abi-decoder": "^2.4.0",
+    "api": "^4.5.2",
+    "mongoose": "^6.0.7",
+    "web3": "^1.8.0"
+  }
+}
