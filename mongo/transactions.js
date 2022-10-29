@@ -1,4 +1,4 @@
-import { Schema, model, models } from 'mongoose';
+const { Schema, model, models } = require('mongoose');
 
 const dataSchema = new Schema({
   marketplace: { type: String, required: true },
@@ -7,5 +7,7 @@ const dataSchema = new Schema({
   data: { type: Array },
 });
 
-export const Transactions =
+const Transactions =
   models.ethTransactions || model('ethTransactions', dataSchema);
+
+module.exports = { Transactions };
