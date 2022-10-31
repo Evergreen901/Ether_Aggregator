@@ -27,15 +27,17 @@ const subscribeLogEvent = (contract, eventName, onSuccess) => {
       async (error, result) => {
         try {
           if (!error) {
-            console.log({ result });
+            // console.log({ result }); // TODO delete
             const parsedData = await onSuccess(
               result.transactionHash,
               result.data,
             );
-            console.log({ parsedData });
-            // FIXME
-            const newDocument = await Transactions.create(parsedData);
-            console.log({ Saved: newDocument._id.toString() });
+            console.log({ parsedData }); // TODO delete
+
+            if (parsedData) {
+              const newDocument = await Transactions.create(parsedData);
+              console.log({ Saved: newDocument._id.toString() });
+            }
           }
         } catch (error1) {
           console.log({ error1 });
@@ -51,15 +53,15 @@ const onSale = async (transactionHash, ...data) => {
   const transaction = await eth.getTransaction(transactionHash);
   const transactionReceipt = await eth.getTransactionReceipt(transactionHash);
 
-  console.log({ transaction }); // FIXME
-  console.log({ data });
+  // console.log({ transaction }); // FIXME
+  // console.log({ data });
   const collectionAddress = '0x' + data?.[0].substr(410, 40);
   const tokenNumber = toBN(data?.[0].substr(450, 64)).toString();
-  console.log([
-    toBN(data?.[0].substr(834, 64)),
-    toBN(data?.[0].substr(1154, 64)),
-    toBN(data?.[0].substr(1474, 64)),
-  ]);
+  // console.log([
+  //   toBN(data?.[0].substr(834, 64)),
+  //   toBN(data?.[0].substr(1154, 64)),
+  //   toBN(data?.[0].substr(1474, 64)),
+  // ]);
   const price = fromWei(
     Web3.utils
       .toBN(data?.[0].substr(834, 64))
@@ -70,18 +72,17 @@ const onSale = async (transactionHash, ...data) => {
   const instruction = 'Sale';
 
   for (const log of transactionReceipt.logs) {
-    console.log({ log }); // FIXME
+    // console.log({ log }); // FIXME
     if (
       log.topics?.length == 3 &&
       log.topics[2].slice(-40).toLowerCase() ==
         transaction.from.slice(-40).toLowerCase()
     ) {
-      console.log('step01'); // FIXME
       const tokenLog = transactionReceipt.logs.filter(
         (itm) => itm.topics?.length == 4,
       )?.[0];
 
-      console.log({ tokenLog });
+      // console.log({ tokenLog });
 
       return {
         marketplace: MARKETPLACE,
@@ -112,7 +113,6 @@ const onSale = async (transactionHash, ...data) => {
       log.topics[2] !=
         '0x0000000000000000000000000000000000000000000000000000000000000000'
     ) {
-      console.log('step02'); // FIXME
       return {
         marketplace: MARKETPLACE,
         transactionHash,
@@ -135,7 +135,6 @@ const onSale = async (transactionHash, ...data) => {
       log.topics?.length == 4 &&
       log.topics[2] == transaction.hash
     ) {
-      console.log('step03'); // FIXME
       const transferLogs = transactionReceipt.logs.filter(
         (itm) => itm.topics?.length == 3 && itm.data.length == 66,
       );

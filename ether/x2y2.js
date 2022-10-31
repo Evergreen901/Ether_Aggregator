@@ -28,9 +28,12 @@ const subscribeLogEvent = (contract, eventName, onSuccess) => {
         try {
           if (!error) {
             const parsedData = await onSuccess(result.transactionHash);
-            console.log({ parsedData });
-            const newDocument = await Transactions.create(parsedData);
-            console.log({ Saved: newDocument._id.toString() });
+            console.log({ parsedData }); // TODO delete
+
+            if (parsedData) {
+              const newDocument = await Transactions.create(parsedData);
+              console.log({ Saved: newDocument._id.toString() });
+            }
           }
         } catch (error1) {
           console.log({ error1 });
