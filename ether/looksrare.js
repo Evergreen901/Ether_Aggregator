@@ -2,6 +2,7 @@ const Web3 = require('web3');
 const abiDecoder = require('abi-decoder');
 const abi = require('../abi/looksrare.json');
 const Transactions = require('../mongo/transactions');
+const TransactionTypes = require('./transactionTypes');
 const web3 = new Web3(
   'wss://mainnet.infura.io/ws/v3/bcce476756454b0a8100275d448f1d07',
 );
@@ -91,7 +92,7 @@ const onCancelAllOrders = async ({ result }) => {
   return {
     marketplace: MARKETPLACE,
     transactionHash,
-    instruction: 'CancelSell',
+    instruction: TransactionTypes.cancelSell,
     data: {
       seller: transaction.from,
     },
@@ -106,7 +107,7 @@ const onCancelMultipleOrders = async ({ result }) => {
   return {
     marketplace: MARKETPLACE,
     transactionHash,
-    instruction: 'CancelSell',
+    instruction: TransactionTypes.cancelSell,
     data: {
       seller: transaction.from,
     },

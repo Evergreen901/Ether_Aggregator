@@ -15,8 +15,8 @@ const MONGODB_CONNECTION_STRING = 'mongodb://localhost:27017/test';
 (async () => {
   await connect(MONGODB_CONNECTION_STRING);
 
-  // addEventListenerForOpenSea();
-  // addEventListenerForX2Y2();
-  // addEventListenerForBlur();
+  addEventListenerForOpenSea();
+  addEventListenerForX2Y2();
+  addEventListenerForBlur();
   addEventListenerForLooksrare();
 })();

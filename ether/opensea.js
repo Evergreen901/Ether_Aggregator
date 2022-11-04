@@ -2,6 +2,7 @@ const Web3 = require('web3');
 const abiDecoder = require('abi-decoder');
 const abi = require('../abi/seaport1.1.json');
 const Transactions = require('../mongo/transactions');
+const TransactionTypes = require('./transactionTypes');
 const web3 = new Web3(
   'wss://mainnet.infura.io/ws/v3/bcce476756454b0a8100275d448f1d07',
 );
@@ -87,7 +88,7 @@ const onSale = async (transactionHash, ...data) => {
       return {
         marketplace: MARKETPLACE,
         transactionHash,
-        instruction: 'Sale',
+        instruction: TransactionTypes.sale,
         data: {
           seller: transaction.from,
           buyer: '0x' + log.topics[1].slice(-40),
@@ -172,7 +173,7 @@ const onCancel = async (transactionHash) => {
   return {
     marketplace: MARKETPLACE,
     transactionHash,
-    instruction: 'CancelSell',
+    instruction: TransactionTypes.cancelSell,
     data: {
       seller: transaction.from,
     },
