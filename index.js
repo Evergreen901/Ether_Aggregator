@@ -9,8 +9,9 @@ const {
 const {
   addEventListener: addEventListenerForLooksrare,
 } = require('./ether/looksrare');
+const getWalletValue = require('./ether/getWalletValue');
 
-const MONGODB_CONNECTION_STRING = 'mongodb://localhost:27017/test';
+const MONGODB_CONNECTION_STRING = 'mongodb://0.0.0.0:27017/test';
 
 (async () => {
   await connect(MONGODB_CONNECTION_STRING);

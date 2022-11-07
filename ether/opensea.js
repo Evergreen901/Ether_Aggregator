@@ -35,9 +35,16 @@ const subscribeLogEvent = (contract, eventName, onSuccess) => {
             );
             console.log({ parsedData }); // TODO delete
 
-            if (parsedData) {
-              const newDocument = await Transactions.create(parsedData);
-              console.log({ Saved: newDocument._id.toString() });
+            if (!parsedData) {
+              return;
+            }
+
+            const newDocument = await Transactions.create(parsedData);
+            console.log({ Saved: newDocument._id.toString() });
+
+            if (parsedData.instruction == TransactionTypes.sale) {
+              const { processSaleRecord } = require('./common');
+              await processSaleRecord();
             }
           }
         } catch (error1) {

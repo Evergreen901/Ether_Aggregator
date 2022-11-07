@@ -2,6 +2,7 @@ const Web3 = require('web3');
 const abiDecoder = require('abi-decoder');
 const abi = require('../abi/blur.io.json');
 const Transactions = require('../mongo/transactions');
+const ValueSeries = require('../mongo/valueSeries');
 const TransactionTypes = require('./transactionTypes');
 const web3 = new Web3(
   'wss://mainnet.infura.io/ws/v3/bcce476756454b0a8100275d448f1d07',
@@ -35,9 +36,16 @@ const subscribeLogEvent = (contract, eventName, onSuccess) => {
             );
             console.log({ parsedData });
 
-            if (parsedData) {
-              const newDocument = await Transactions.create(parsedData);
-              console.log({ Saved: newDocument._id.toString() });
+            if (!parsedData) {
+              return;
+            }
+
+            const newDocument = await Transactions.create(parsedData);
+            console.log({ Saved: newDocument._id.toString() });
+
+            if (parsedData.instruction == TransactionTypes.sale) {
+              const { processSaleRecord } = require('./common');
+              await processSaleRecord();
             }
           }
         } catch (error1) {
@@ -52,11 +60,6 @@ const subscribeLogEvent = (contract, eventName, onSuccess) => {
 
 const onSale = async (transactionHash, ...data) => {
   const transaction = await eth.getTransaction(transactionHash);
-  const transactionReceipt = await eth.getTransactionReceipt(transactionHash);
-
-  // console.log({ transaction }); // TODO delete
-  // console.log({ data });
-
   const instruction = TransactionTypes.sale;
 
   if (data?.[0].length == 2178) {

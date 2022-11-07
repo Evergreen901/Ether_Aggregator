@@ -5,7 +5,13 @@ const dataSchema = new Schema(
     marketplace: { type: String, required: true },
     transactionHash: { type: String, required: true },
     instruction: { type: String, required: true },
-    data: { type: Array },
+    data: {
+      seller: { type: String },
+      buyer: { type: String },
+      collectionAddress: { type: String },
+      tokenNumber: { type: String },
+      price: { type: Number },
+    },
   },
   {
     timestamps: true,
