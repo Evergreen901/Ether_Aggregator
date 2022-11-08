@@ -2,7 +2,6 @@ const Web3 = require('web3');
 const abiDecoder = require('abi-decoder');
 const abi = require('../abi/blur.io.json');
 const Transactions = require('../mongo/transactions');
-const ValueSeries = require('../mongo/valueSeries');
 const TransactionTypes = require('./transactionTypes');
 const web3 = new Web3(
   'wss://mainnet.infura.io/ws/v3/bcce476756454b0a8100275d448f1d07',

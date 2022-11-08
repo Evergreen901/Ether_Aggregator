@@ -13,6 +13,7 @@ const processSaleRecord = async (parsedData) => {
 const createOrUpdateValueRecord = async (wallet, value) => {
   const mongoose = require('mongoose');
   const toObjectId = mongoose.Types.ObjectId;
+  const ValueSeries = require('../mongo/valueSeries');
 
   const latestRecord = await ValueSeries.aggregate([
     { $match: { wallet } },
