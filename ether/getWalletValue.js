@@ -16,7 +16,6 @@ module.exports = getWalletValue = async (address) => {
 
   await Moralis.start({
     apiKey: 'P7wifmaXjwI2qyaBuRhTBnW4aiwAu1c8iBOTfOrXNPwsPvqTJo1OzdikcVT9GOxQ',
-    // ...and any other configuration
   });
 
   const response = await Moralis.EvmApi.nft.getWalletNFTs({
@@ -27,7 +26,7 @@ module.exports = getWalletValue = async (address) => {
   const nftList = response?.data?.result ?? [];
   let totalValue = 0;
 
-  for await (const nft of nftList) {
+  for (const nft of nftList) {
     while (true) {
       const response = await Moralis.EvmApi.nft.getNFTLowestPrice({
         address: nft.token_address,
@@ -40,7 +39,9 @@ module.exports = getWalletValue = async (address) => {
         continue;
       }
 
-      totalValue += fromWei(toBN(response.result?._data?.price?.toString()));
+      totalValue += fromWei(
+        toBN(response.result?._data?.price?.toString() ?? '0'),
+      );
       break;
     }
   }

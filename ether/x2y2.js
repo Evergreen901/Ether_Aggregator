@@ -40,7 +40,7 @@ const subscribeLogEvent = (contract, eventName, onSuccess) => {
 
             if (parsedData.instruction == TransactionTypes.sale) {
               const { processSaleRecord } = require('./common');
-              await processSaleRecord();
+              await processSaleRecord(parsedData);
             }
           }
         } catch (error1) {
