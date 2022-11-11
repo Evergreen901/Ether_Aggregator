@@ -9,7 +9,6 @@ const {
 const {
   addEventListener: addEventListenerForLooksrare,
 } = require('./ether/looksrare');
-const getWalletValue = require('./ether/getWalletValue');
 
 const MONGODB_CONNECTION_STRING = 'mongodb://0.0.0.0:27017/test';
 

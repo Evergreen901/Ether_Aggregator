@@ -12,39 +12,37 @@ const sleep = (milliseconds) => {
 };
 
 module.exports = getWalletValue = async (address) => {
-  const chain = EvmChain.ETHEREUM;
+  try {
+    const chain = EvmChain.ETHEREUM;
 
-  await Moralis.start({
-    apiKey: 'P7wifmaXjwI2qyaBuRhTBnW4aiwAu1c8iBOTfOrXNPwsPvqTJo1OzdikcVT9GOxQ',
-  });
+    await Moralis.start({
+      apiKey:
+        'P7wifmaXjwI2qyaBuRhTBnW4aiwAu1c8iBOTfOrXNPwsPvqTJo1OzdikcVT9GOxQ',
+    });
 
-  const response = await Moralis.EvmApi.nft.getWalletNFTs({
-    address,
-    chain,
-  });
+    const response = await Moralis.EvmApi.nft.getWalletNFTs({
+      address,
+      chain,
+    });
 
-  const nftList = response?.data?.result ?? [];
-  let totalValue = 0;
+    const nftList = response?.data?.result ?? [];
+    let totalValue = 0;
 
-  for (const nft of nftList) {
-    while (true) {
-      const response = await Moralis.EvmApi.nft.getNFTLowestPrice({
-        address: nft.token_address,
-        chain,
-      });
+    for (const nft of nftList) {
+      while (true) {
+        const response = await Moralis.EvmApi.nft.getNFTLowestPrice({
+          address: nft.token_address,
+          chain,
+        });
 
-      if (!response) {
-        console.log('Retrying to get fp');
-        await sleep(100);
-        continue;
+        totalValue += +(response?.result?._data?.price?.toString() ?? '0');
+        break;
       }
-
-      totalValue += fromWei(
-        toBN(response.result?._data?.price?.toString() ?? '0'),
-      );
-      break;
     }
-  }
 
-  return totalValue;
+    return fromWei(toBN(totalValue));
+  } catch (e) {
+    console.error(e.code === 'C0006' ? e.code : e);
+    return 0;
+  }
 };
