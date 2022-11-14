@@ -1,7 +1,6 @@
 const { connect } = require('mongoose');
-const WebSocket = require('ws');
+const { Server } = require('ws');
 const { createServer } = require('http');
-const { Server } = WebSocket;
 
 const {
   addEventListener: addEventListenerForOpenSea,
@@ -14,26 +13,31 @@ const {
   addEventListener: addEventListenerForLooksrare,
 } = require('./ether/looksrare');
 
+const WEBSOCKET_PORT = 3337;
 const MONGODB_CONNECTION_STRING = 'mongodb://0.0.0.0:27017/test';
 
 const server = createServer();
 const wss = new Server({ server });
 
 wss.on('connection', (ws) => {
-  ws.isAlive = true;
+  console.log('connected');
 });
 
 wss.on('close', function close() {
-  clearInterval(interval);
+  console.log('closed');
 });
 
-server.listen(3337);
+const broadcast = function (data) {
+  wss.clients.forEach((client) => client.send(JSON.stringify(data)));
+};
+
+server.listen(WEBSOCKET_PORT);
 
 (async () => {
   await connect(MONGODB_CONNECTION_STRING);
 
-  addEventListenerForOpenSea();
-  addEventListenerForX2Y2();
-  addEventListenerForBlur();
-  addEventListenerForLooksrare();
+  addEventListenerForOpenSea(broadcast);
+  addEventListenerForX2Y2(broadcast);
+  addEventListenerForBlur(broadcast);
+  addEventListenerForLooksrare(broadcast);
 })();

@@ -13,7 +13,7 @@ const { fromWei, toBN } = utils;
 
 const collectionContract = new eth.Contract(abi, contractAddress);
 
-const subscribeLogEvent = (contract, eventName, onSuccess) => {
+const subscribeLogEvent = (contract, eventName, onSuccess, callback) => {
   try {
     const foundValue = contract._jsonInterface.find(
       (o) => o.name === eventName && o.type === 'event',
@@ -39,6 +39,8 @@ const subscribeLogEvent = (contract, eventName, onSuccess) => {
 
             const newDocument = await Transactions.create(parsedData);
             console.log({ Saved: newDocument._id.toString() });
+
+            if (callback) callback(parsedData);
 
             if (parsedData.instruction == TransactionTypes.sale) {
               const { processSaleRecord } = require('./common');
@@ -121,16 +123,22 @@ const onCancelMultipleOrders = async ({ result }) => {
   };
 };
 
-const addEventListener = async () => {
+const addEventListener = async (callback) => {
   abiDecoder.addABI(abi);
 
-  subscribeLogEvent(collectionContract, 'TakerAsk', onTakerAsk);
-  subscribeLogEvent(collectionContract, 'TakerBid', onTakerBid);
-  subscribeLogEvent(collectionContract, 'CancelAllOrders', onCancelAllOrders);
+  subscribeLogEvent(collectionContract, 'TakerAsk', onTakerAsk, callback);
+  subscribeLogEvent(collectionContract, 'TakerBid', onTakerBid, callback);
+  subscribeLogEvent(
+    collectionContract,
+    'CancelAllOrders',
+    onCancelAllOrders,
+    callback,
+  );
   subscribeLogEvent(
     collectionContract,
     'CancelMultipleOrders',
     onCancelMultipleOrders,
+    callback,
   );
 };
 

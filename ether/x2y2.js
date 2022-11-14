@@ -13,7 +13,7 @@ const { fromWei, toBN } = utils;
 
 const collectionContract = new eth.Contract(abi, contractAddress);
 
-const subscribeLogEvent = (contract, eventName, onSuccess) => {
+const subscribeLogEvent = (contract, eventName, onSuccess, callback) => {
   try {
     const foundValue = contract._jsonInterface.find(
       (o) => o.name === eventName && o.type === 'event',
@@ -37,6 +37,8 @@ const subscribeLogEvent = (contract, eventName, onSuccess) => {
 
             const newDocument = await Transactions.create(parsedData);
             console.log({ Saved: newDocument._id.toString() });
+
+            if (callback) callback(parsedData);
 
             if (parsedData.instruction == TransactionTypes.sale) {
               const { processSaleRecord } = require('./common');
@@ -128,11 +130,11 @@ const onEvCancel = async (transactionHash) => {
   };
 };
 
-const addEventListener = () => {
+const addEventListener = (callback) => {
   abiDecoder.addABI(abi);
 
-  subscribeLogEvent(collectionContract, 'EvProfit', onEvProfit);
-  subscribeLogEvent(collectionContract, 'EvCancel', onEvCancel);
+  subscribeLogEvent(collectionContract, 'EvProfit', onEvProfit, callback);
+  subscribeLogEvent(collectionContract, 'EvCancel', onEvCancel, callback);
 };
 
 module.exports = { addEventListener };

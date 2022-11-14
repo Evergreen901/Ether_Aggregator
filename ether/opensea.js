@@ -13,7 +13,7 @@ const { fromWei, toBN } = utils;
 
 const collectionContract = new eth.Contract(abi, contractAddress);
 
-const subscribeLogEvent = (contract, eventName, onSuccess) => {
+const subscribeLogEvent = (contract, eventName, onSuccess, callback) => {
   try {
     const foundValue = contract._jsonInterface.find(
       (o) => o.name === eventName && o.type === 'event',
@@ -41,6 +41,8 @@ const subscribeLogEvent = (contract, eventName, onSuccess) => {
 
             const newDocument = await Transactions.create(parsedData);
             console.log({ Saved: newDocument._id.toString() });
+
+            if (callback) callback(parsedData);
 
             if (parsedData.instruction == TransactionTypes.sale) {
               const { processSaleRecord } = require('./common');
@@ -187,43 +189,11 @@ const onCancel = async (transactionHash) => {
   };
 };
 
-const addEventListener = async () => {
+const addEventListener = async (callback) => {
   abiDecoder.addABI(abi);
 
-  subscribeLogEvent(collectionContract, 'OrderCancelled', onCancel);
-  subscribeLogEvent(collectionContract, 'OrderFulfilled', onSale);
-  // subscribeLogEvent(collectionContract, 'OrderValidated', onCancel);
-
-  // TODO delete
-  // const result = await onSale(
-  //   '0x69d73d7abd1871e3801886621d97a9d6b74c4206d9e85281b69b2275fb9b81ce',
-  //   '0x32a793d7ea38cc4759ed20b604c97bb57c33de742086a11fad624dd9b6a4b55f' +
-  //     '0000000000000000000000004e144d2b5b6acc6956e8e7026854feb49eaebc43' +
-  //     '0000000000000000000000000000000000000000000000000000000000000080' +
-  //     '0000000000000000000000000000000000000000000000000000000000000120' +
-  //     '0000000000000000000000000000000000000000000000000000000000000001' +
-  //     '0000000000000000000000000000000000000000000000000000000000000002' +
-  //     '0000000000000000000000006de7ac835ec6841af9b94fd1273db83b8d69e3f7' +
-  //     '0000000000000000000000000000000000000000000000000000000000000c52' +
-  //     '0000000000000000000000000000000000000000000000000000000000000001' +
-  //     '0000000000000000000000000000000000000000000000000000000000000003' +
-  //     '0000000000000000000000000000000000000000000000000000000000000000' +
-  //     '0000000000000000000000000000000000000000000000000000000000000000' +
-  //     '0000000000000000000000000000000000000000000000000000000000000000' +
-  //     '0000000000000000000000000000000000000000000000000031bced02db0000' +
-  //     '00000000000000000000000017ff1fb097b55a062231a260dded8455ab2ddc87' +
-  //     '0000000000000000000000000000000000000000000000000000000000000000' +
-  //     '0000000000000000000000000000000000000000000000000000000000000000' +
-  //     '0000000000000000000000000000000000000000000000000000000000000000' +
-  //     '00000000000000000000000000000000000000000000000000016bcc41e90000' +
-  //     '0000000000000000000000000000a26b00c1f0df003000390027140000faa719' +
-  //     '0000000000000000000000000000000000000000000000000000000000000000' +
-  //     '0000000000000000000000000000000000000000000000000000000000000000' +
-  //     '0000000000000000000000000000000000000000000000000000000000000000' +
-  //     '0000000000000000000000000000000000000000000000000005af3107a40000' +
-  //     '000000000000000000000000085e84c4e00bcf5549dc296c8c5e3bba29cf6372',
-  // );
-  // console.log(result);
+  subscribeLogEvent(collectionContract, 'OrderCancelled', onCancel, callback);
+  subscribeLogEvent(collectionContract, 'OrderFulfilled', onSale, callback);
 };
 
 module.exports = { addEventListener };
